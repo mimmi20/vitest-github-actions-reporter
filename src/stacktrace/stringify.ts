@@ -9,7 +9,7 @@ export const stringifyStacktrace = (
 ) => {
   return stack
     .map(s => {
-      let file = s.file
+      let { file } = s
       if (trimRepositoryPrefix && repositoryPrefixes.length > 0) {
         file = trimPrefixes(file, repositoryPrefixes)
       }

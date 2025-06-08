@@ -3,7 +3,7 @@ import type {
   File,
   ParsedStack,
   Reporter,
-  Task,
+  RunnerTask,
   Vitest
 } from 'vitest'
 import {
@@ -59,7 +59,7 @@ export default class GitHubActionsReporter implements Reporter {
     }
   }
 
-  private reportTasks(filename: string, tasks: Task[]) {
+  private reportTasks(filename: string, tasks: RunnerTask[]) {
     for (const task of tasks) {
       if (task.type === 'suite') {
         this.reportTaskErrors(filename, task)
@@ -67,15 +67,13 @@ export default class GitHubActionsReporter implements Reporter {
         this.reportTasks(filename, task.tasks)
       } else if (task.type === 'test') {
         this.reportTaskErrors(filename, task)
-      } else if (task.type === 'custom') {
-        // TODO: benchmark?
       } else {
         checkNever(task)
       }
     }
   }
 
-  private reportTaskErrors(filename: string, task: Task) {
+  private reportTaskErrors(filename: string, task: RunnerTask) {
     for (const err of task.result?.errors ?? []) {
       this.reportTaskError(task.type, filename, err)
     }
@@ -86,7 +84,7 @@ export default class GitHubActionsReporter implements Reporter {
     filename: string,
     err: ErrorWithDiff
   ) {
-    const stackTrace = this.parseStacktrace(err.stackStr)
+    const stackTrace = this.parseStacktrace(err.stack)
     const position = this.getPositionFromError(filename, stackTrace)
     const message = this.createMessage(stackTrace)
 
@@ -132,5 +130,5 @@ export default class GitHubActionsReporter implements Reporter {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function checkNever(_: never) {}

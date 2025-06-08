@@ -83,8 +83,8 @@ export function parseSingleStack(raw: string): ParsedStack | null {
   return {
     method,
     file,
-    line: parseInt(lineNumber),
-    column: parseInt(columnNumber)
+    line: parseInt(lineNumber, 10),
+    column: parseInt(columnNumber, 10)
   }
 }
 
